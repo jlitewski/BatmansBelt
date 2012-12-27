@@ -1,4 +1,4 @@
-package com.hackhalo2.util;
+package com.hackhalo2.util.sync;
 
 public enum OS {
 	UNIX("Unix"),

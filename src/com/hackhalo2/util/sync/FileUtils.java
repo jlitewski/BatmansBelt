@@ -1,4 +1,4 @@
-package com.hackhalo2.util;
+package com.hackhalo2.util.sync;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,32 +7,28 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.file.AccessMode;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.spi.FileSystemProvider;
-//import java.util.concurrent.ExecutorService;
-//import java.util.concurrent.Executors;
 
-public class FileHandler {
+public class FileUtils {
 
-	private FileSystemProvider fsp = null;
-	//private ExecutorService executor = Executors.newCachedThreadPool();
+	private static FileSystemProvider fsp = FileSystems.getDefault().provider();
 
-	protected FileHandler(FileSystemProvider fsp) {
-		this.fsp = fsp;
-	}
+	private FileUtils() { }
 
-	public void copy(URI from, URI to) {
+	public static void copy(final URI from, final URI to) {
 		Path fromPath = Paths.get(from);
 		Path toPath = Paths.get(to);
-		this.copy(fromPath, toPath);
+		copy(fromPath, toPath);
 	}
 
-	public void copy(Path from, Path to) {
+	public static void copy(final Path from, final Path to) {
 		try {
-			this.fsp.checkAccess(to, AccessMode.WRITE);
-			this.fsp.checkAccess(from, AccessMode.READ);
+			fsp.checkAccess(to, AccessMode.WRITE);
+			fsp.checkAccess(from, AccessMode.READ);
 		} catch(UnsupportedOperationException | IOException e) {
 			System.err.println("Unable to copy the File due to the folling Exception: ");
 			e.printStackTrace();
@@ -64,16 +60,16 @@ public class FileHandler {
 		}
 	}
 
-	public void createSymlink(URI from, URI to) {
+	public static void createSymlink(URI from, URI to) {
 		Path fromPath = Paths.get(from);
 		Path toPath = Paths.get(to);
-		this.createSymlink(fromPath, toPath);
+		createSymlink(fromPath, toPath);
 	}
 
-	public void createSymlink(Path from, Path to) {
+	public static void createSymlink(Path from, Path to) {
 		try {
-			this.fsp.checkAccess(to, AccessMode.WRITE);
-			this.fsp.checkAccess(from, AccessMode.READ);
+			fsp.checkAccess(to, AccessMode.WRITE);
+			fsp.checkAccess(from, AccessMode.READ);
 
 			Files.createSymbolicLink(from, to);
 		} catch(UnsupportedOperationException | IOException e) {
@@ -83,14 +79,14 @@ public class FileHandler {
 		}
 	}
 
-	public void delete(URI file) {
+	public static void delete(URI file) {
 		Path path = Paths.get(file);
-		this.delete(path);
+		delete(path);
 	}
 
-	public void delete(Path file) {
+	public static void delete(Path file) {
 		try {
-			this.fsp.checkAccess(file, AccessMode.WRITE);
+			fsp.checkAccess(file, AccessMode.WRITE);
 			Files.deleteIfExists(file);
 		} catch(UnsupportedOperationException | IOException e) {
 			System.err.println("Unable to delete file due to the following Exception: ");
@@ -99,15 +95,15 @@ public class FileHandler {
 		}
 	}
 	
-	public File createTemporaryFile(URI file) {
+	public static File createTemporaryFile(URI file) {
 		Path path = Paths.get(file);
-		return this.createTemporaryFile(path);
+		return createTemporaryFile(path);
 	}
 	
-	public File createTemporaryFile(Path file) {
+	public static File createTemporaryFile(Path file) {
 		Path temp = null;
 		try {
-			this.fsp.checkAccess(file, AccessMode.WRITE);
+			fsp.checkAccess(file, AccessMode.WRITE);
 			if(Files.notExists(file)) {
 				Path dirPath = file.getParent().normalize();
 				if(Files.notExists(dirPath)) {
@@ -125,11 +121,11 @@ public class FileHandler {
 		return temp.toFile();
 	}
 
-	public File getTemporaryDirectory() {
+	public static File getTemporaryDirectory() {
 		return new File(System.getProperty("java.io.tmpdir")+"/"+System.currentTimeMillis()+"/");
 	}
 
-	public String getFileExtention(String file) {
+	public static String getFileExtention(String file) {
 		if(file.contains(".")) {
 			return file.substring(file.lastIndexOf(".")+1, file.length());
 		} else return null;
