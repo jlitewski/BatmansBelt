@@ -16,6 +16,7 @@ import java.nio.file.spi.FileSystemProvider;
 public class FileUtils {
 
 	private static FileSystemProvider fsp = FileSystems.getDefault().provider();
+	private static Path assetsPath = null;
 
 	private FileUtils() { }
 
@@ -123,6 +124,31 @@ public class FileUtils {
 
 	public static File getTemporaryDirectory() {
 		return new File(System.getProperty("java.io.tmpdir")+"/"+System.currentTimeMillis()+"/");
+	}
+	
+	public static void setAssetsDirectory(URI directory) {
+		Path path = Paths.get(directory);
+		setAssetsDirectory(path);
+	}
+	
+	public static void setAssetsDirectory(Path directory) {
+		assetsPath = directory;
+	}
+	
+	public static String getAssetsDirectoryAsString() {
+		return assetsPath.toString();
+	}
+	
+	public static File getAssetsDirectoryAsFile() {
+		return assetsPath.toFile();
+	}
+	
+	public static URI getAssetsDirectoryAsURI() {
+		return assetsPath.toUri();
+	}
+	
+	public static Path getAssetsDirectory() {
+		return assetsPath;
 	}
 
 	public static String getFileExtention(String file) {
